@@ -1,0 +1,65 @@
+.stocks-container {
+    display: flex;
+    flex-direction: column;
+    max-width: 800px;
+    margin: auto;
+    margin-top: 30px;
+}
+  
+.stock-item {
+    display: flex;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    text-align: center;
+}
+  
+.stock-image {
+    width: 100px;
+    padding: 10px;
+}
+  
+.stock-image img {
+    max-width: 100%;
+    height: auto;
+}
+  
+.stock-details {
+    flex-grow: 1;
+    padding: 10px;
+}
+
+.stock-details button {
+    margin-right: 5px;
+}
+  
+.stock-basic-info p {
+    margin: 5px 0;
+}
+  
+.stock-price-change {
+    color: #333;
+}
+  
+.stock-price-change.positive {
+    color: green;
+}
+  
+.stock-price-change.negative {
+    color: red;
+}
+  
+.stock-actions {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 10px;
+}
+  
+.portfolio-selection,
+.quantity-input {
+    width: 100%;
+    margin-bottom: -5px;
+}
+  

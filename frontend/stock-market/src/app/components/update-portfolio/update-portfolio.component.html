@@ -1,0 +1,26 @@
+<div class="add-portfolio-container">
+    <h2>Update Portfolio</h2>
+    <form [formGroup]="portfolioForm" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+            <label for="ownerName">Owner Name:</label>
+            <input type="text" formControlName="ownerName" id="ownerName">
+        </div>
+        <div class="form-group">
+            <label for="bankName">Bank Name:</label>
+            <input type="text" formControlName="bankName" id="bankName">
+        </div>
+        <div class="form-group">
+            <label for="bankBalance">Bank Balance:</label>
+            <input type="number" formControlName="bankBalance" id="bankBalance">
+        </div>
+        <div class="form-group">
+            <label for="riskTolerance">Risk Tolerance:</label>
+            <input type="number" formControlName="riskTolerance" id="riskTolerance">
+        </div>
+        <div class="form-group">
+            <label for="investmentStrategy">Investment Strategy:</label>
+            <input type="text" formControlName="investmentStrategy" id="investmentStrategy">
+        </div>
+        <button type="submit" mat-raised-button color="primary" class="center-button">Update Portfolio</button>
+    </form>
+</div>

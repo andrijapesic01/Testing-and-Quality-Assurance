@@ -1,0 +1,59 @@
+.portfolio-container {
+  margin: 20px;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+  
+.portfolio-info {
+  margin-bottom: 20px;
+}
+
+.info-columns {
+  display: flex;
+  justify-content: space-between;
+}
+
+.bought-stocks {
+  border-top: 2px solid #ccc;
+  padding-top: 20px;
+}
+
+.bought-stock {
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #ddd;
+}
+  
+.bought-stock p {
+  margin: 0;
+  font-size: 16px; 
+  width: 100%;
+}
+  
+.bought-stock strong {
+  font-weight: bold;
+}
+  
+.bought-stock .quantity-input {
+  flex-shrink: 0; 
+  height: 28px;
+  width: 80px; 
+  margin-right: 10px;
+}
+  
+.bought-stock button {
+  margin-top: 5px;
+  font-size: 16px; 
+  height: 36px; 
+}
+
+.button-group {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.button-group button {
+  margin-right: 10px;
+}

@@ -1,0 +1,23 @@
+<div class="add-stock-container">
+    <h2>Add Stock</h2>
+    <form [formGroup]="stockForm" (ngSubmit)="submitStock()">
+      <div class="form-group">
+        <label for="symbol">Symbol:</label>
+        <input type="text" formControlName="symbol" id="symbol">
+      </div>
+      <div class="form-group">
+        <label for="company">Company:</label>
+        <input type="text" formControlName="company" id="company">
+      </div>
+      <div class="form-group">
+        <label for="currentPrice">Current Price:</label>
+        <input type="number" formControlName="currentPrice" id="currentPrice">
+      </div>
+      <div class="form-group">
+        <label for="logoUrl">Logo URL:</label>
+        <input type="text" formControlName="logoUrl" id="logoUrl">
+      </div>
+      <button type="submit" mat-raised-button color="primary" class="center-button">Add Stock</button>
+    </form>
+</div>
+  

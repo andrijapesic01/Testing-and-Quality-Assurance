@@ -1,0 +1,32 @@
+<div class="portfolio-container">
+    <div class="portfolio-info" *ngIf="portfolio">
+        <h2>{{ portfolio.ownerName }}'s Portfolio</h2>
+        <div class="info-columns">
+            <div>
+                <p><strong>Bank Name:</strong> {{ portfolio.bankName }}</p>
+                <p><strong>Bank Balance:</strong> {{ portfolio.bankBalance | currency:'USD':'symbol':'1.2-2' }}</p>
+                </div>
+                <div>
+                <p><strong>Risk Tolerance:</strong> {{ portfolio.riskTolerance }}</p>
+                <p><strong>Investment Strategy:</strong> {{ portfolio.investmentStrategy }}</p>
+            </div>
+        </div>
+    </div>  
+    <div class="bought-stocks">
+        <h3>Bought Stocks</h3>
+        <div *ngFor="let boughtStock of boughtStocks" class="bought-stock">
+            <p><strong>{{ boughtStock.stock.symbol }}</strong> {{ boughtStock.stock.company }} {{ boughtStock.stock.currentPrice | currency:'USD':'symbol':'1.2-2' }} 
+            <span [ngClass]="{'positive': boughtStock.stock.priceChange > 0, 'negative': boughtStock.stock.priceChange < 0}">
+                {{ boughtStock.stock.priceChange | currency:'USD':'symbol':'1.2-2' }} ({{ boughtStock.stock.percentChange }}%)
+            </span>
+            Quantity: <input type="number" [ngModel]="boughtStock?.quantity" class="quantity-input">
+            <button mat-raised-button color="warn" (click)="sellStock(boughtStock)">Sell</button>
+            </p>
+        </div>
+    </div>
+    <div class="button-group">
+        <button mat-raised-button matColor="primary" (click)="updatePortfolio(portfolio.id)">Update</button>
+        <button mat-raised-button matColor="warn" (click)="deletePortfolio(portfolio.id)">Delete</button>
+    </div>
+</div>
+  

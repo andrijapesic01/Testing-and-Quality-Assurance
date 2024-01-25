@@ -1,0 +1,19 @@
+<!-- portfolios.component.html -->
+
+<div class="portfolios-container">
+    <div class="portfolio-section">
+      <h2>Portfolios</h2>
+    </div>
+    <div *ngFor="let portfolio of portfolios" class="portfolio-item">
+      <p><strong>Owner:</strong> {{ portfolio.ownerName }}</p>
+      <p><strong>Bank Name:</strong> {{ portfolio.bankName }}</p>
+      <p><strong>Bank Balance:</strong> {{ portfolio.bankBalance | currency:'USD':'symbol':'1.2-2' }}</p>
+      <p><strong>Risk Tolerance:</strong> {{ portfolio.riskTolerance }}</p>
+      <p><strong>Investment Strategy:</strong> {{ portfolio.investmentStrategy }}</p>
+      <div class="button-group">
+        <button mat-raised-button color="primary" (click)="viewPortfolio(portfolio.id)">View</button>
+      </div>
+    </div>
+    <!-- Repeat the portfolio-item block for each portfolio -->
+  </div>
+  
