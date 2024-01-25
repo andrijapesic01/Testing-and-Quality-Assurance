@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { StockModel } from '../../models/stock.model';
 import { Stock } from '../../models/stock';
 import { StockService } from '../../services/stock.service';
+import { FileService } from '../../services/file.service';
 
 @Component({
   selector: 'app-add-stock',
@@ -11,8 +12,10 @@ import { StockService } from '../../services/stock.service';
 })
 export class AddStockComponent {
   stockForm: FormGroup;
+  selectedFile!: File;
+  uploadImgUrl: string = "";
 
-  constructor(private fb: FormBuilder, private stockService: StockService) {
+  constructor(private fb: FormBuilder, private stockService: StockService, private fileService: FileService) {
     this.stockForm = this.fb.group({
       symbol: ['', Validators.required],
       company: ['', Validators.required],
@@ -21,13 +24,33 @@ export class AddStockComponent {
     });
   }
 
+  onFileSelected(event: any): void {
+    this.selectedFile = event.target.files[0];
+    this.uploadImage();
+  }
+
+  uploadImage(): void {
+    if (this.selectedFile) {
+      this.fileService.uploadImage(this.selectedFile).subscribe(
+        imageUrl => {
+          console.log('Image uploaded successfully. URL:', imageUrl);
+          this.uploadImgUrl = imageUrl;
+        },
+        error => {
+          console.error('Error uploading image:', error);
+        }
+      );
+    } 
+  }
+
   submitStock() {
     if (this.stockForm.valid) {
       const stock: StockModel = {
         Symbol: this.stockForm.get('symbol')?.value,
         Company: this.stockForm.get('company')?.value,
         CurrentPrice: this.stockForm.get('currentPrice')?.value,
-        LogoURL: this.stockForm.get('logoUrl')?.value,
+        LogoURL: this.uploadImgUrl,
+        //LogoURL: this.stockForm.get('logoUrl')?.value,
       };
 
       this.stockService.addStock(stock).subscribe(

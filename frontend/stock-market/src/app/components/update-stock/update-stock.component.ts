@@ -4,6 +4,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Stock } from '../../models/stock';
 import { StockModel } from '../../models/stock.model';
+import { FileService } from '../../services/file.service';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-update-stock',
@@ -14,12 +16,15 @@ export class UpdateStockComponent implements OnInit {
   stockForm!: FormGroup;
   stockId!: number;
   stock!: Stock;
+  selectedFile!: File;
+  url: string = "";
   
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private stockService: StockService,
-    private router: Router
+    private fileService: FileService, 
+    private router: Router,
   ) { }
 
   ngOnInit(): void {
@@ -50,13 +55,38 @@ export class UpdateStockComponent implements OnInit {
     );
   }
 
+  onFileSelected(event: any): void {
+    this.selectedFile = event.target.files[0];
+    this.uploadImage();
+  }
+
+  uploadImage(): void {
+    if (this.selectedFile) {
+      this.fileService.uploadImage(this.selectedFile).subscribe(
+        imageUrl => {
+          console.log('Image uploaded successfully. URL:', imageUrl);
+          this.url = imageUrl;
+        },
+        error => {
+          console.error('Error uploading image:', error);
+        }
+      );
+    } 
+  }
+
   submitStock() {
     if (this.stockForm.valid) {
       const formData: StockModel = this.stockForm.value;
 
+      if(this.url != "")
+      {
+        formData.LogoURL = this.url;
+      }
+
       this.stockService.updateStock(this.stockId, formData).subscribe(
         (response: Stock) => {
           console.log('Stock updated successfully', response);
+          this.router.navigate(['/home']);
         },
         (error) => {
           console.error('Error updating stock', error);

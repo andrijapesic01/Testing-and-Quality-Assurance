@@ -27,9 +27,10 @@ export class StocksComponent implements OnInit {
   }
 
   loadStocks() {
-    this.stocksService.getStocks().subscribe((stocks: Stock[])=> 
-      this.stocks = stocks
-    );
+    this.stocksService.getStocks().subscribe((stocks: Stock[])=> {
+      this.stocks = stocks;
+      console.log(stocks);
+    });
   }
 
   loadPortfolios() {
@@ -67,6 +68,10 @@ export class StocksComponent implements OnInit {
 
   updateStock(stockId: number) {
     this.router.navigate(['/update-stock', stockId]);
+  }
+
+  getFullImageUrl(stock: Stock) {
+    return `https://localhost:7193${stock.logoURL}`;
   }
 
 }

@@ -15,7 +15,8 @@
       </div>
       <div class="form-group">
         <label for="logoUrl">Logo URL:</label>
-        <input type="text" formControlName="logoUrl" id="logoUrl">
+        <input type="file" formControlName="logoUrl" id="logoUrl" accept="image/*" (change)="onFileSelected($event)">
+        <!-- <input type="text" formControlName="logoUrl" id="logoUrl"> -->
       </div>
       <button type="submit" mat-raised-button color="primary" class="center-button">Add Stock</button>
     </form>

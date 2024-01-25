@@ -1,7 +1,7 @@
 <div class="stocks-container">
     <div *ngFor="let stock of stocks" class="stock-item">
       <div class="stock-image">
-        <img [src]="stock.logoURL" alt="Stock Logo">
+        <img *ngIf="stock.logoURL" [src]="getFullImageUrl(stock)" alt="Stock Logo">
       </div>
       <div class="stock-details">
         <div class="stock-basic-info">
@@ -23,9 +23,6 @@
       <div class="stock-actions">
         <mat-form-field class="portfolio-selection">
           <mat-label>Select Portfolio</mat-label>
-          <!-- <mat-select [(ngModel)]="selectedPortfolio" placeholder="Select Portfolio">
-            <mat-option *ngFor="let portfolio of portfolios" [value]="portfolio">{{ portfolio.OwnerName }}</mat-option>
-          </mat-select> -->
           <mat-select [(ngModel)]="selectedPortfolio" placeholder="Select Portfolio">
             <mat-option *ngFor="let portfolio of portfolios" [value]="portfolio">{{ portfolio.ownerName }}</mat-option>
           </mat-select>
