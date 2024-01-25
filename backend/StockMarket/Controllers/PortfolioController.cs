@@ -68,7 +68,7 @@ public class PortfolioController : ControllerBase
 
         portfolio.OwnerName = pm.OwnerName;
         portfolio.BankBalance = pm.BankBalance;
-        portfolio.BankBalance = pm.BankBalance;
+        portfolio.BankName = pm.BankName;
         portfolio.RiskTolerance = pm.RiskTolerance;
         portfolio.InvestmentStrategy = pm.InvestmentStrategy;
 
