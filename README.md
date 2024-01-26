@@ -1,5 +1,5 @@
 # Testing-and-Quality-Assurance
-University Project ( ASP.NET &amp; Angular + NUunit &amp; Playwrigth)
+University Project ( ASP.NET &amp; Angular + NUnit &amp; Playwrigth)
 
 Opis projekta - Testiranje i kvalitet softvera 2023./2024. god.
 
