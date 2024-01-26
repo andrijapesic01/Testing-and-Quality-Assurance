@@ -12,7 +12,8 @@ namespace StockMarket.Tests
         public void Setup()
         {
             var options = new DbContextOptionsBuilder<StockMarketContext>()
-                .UseInMemoryDatabase(databaseName: "TestDatabaseStockController")
+                //.UseInMemoryDatabase(databaseName: "TestDatabaseStocks")
+                .UseInMemoryDatabase(databaseName: $"TestDatabaseStocks_{Guid.NewGuid()}")
                 .Options;
 
             _context = new StockMarketContext(options);
@@ -31,6 +32,7 @@ namespace StockMarket.Tests
             _stockController = new StockController(_context);
         }
 
+        [Test]
         [TestCase("AAPL", "Apple Inc.", 150.0, "https://example.com/apple-logo.png")]
         [TestCase("GOOGL", "Alphabet Inc.", 2000.0, "https://example.com/alphabet-logo.png")]
         [TestCase("MSFT", "Microsoft Corporation", 300.0, "https://example.com/alphabet-logo.png")]
@@ -61,6 +63,7 @@ namespace StockMarket.Tests
             Assert.That(logoURL, Is.EqualTo(addedStock.LogoURL));
         }
 
+        [Test]
         [TestCase(1)]
         [TestCase(2)]
         [TestCase(3)]
@@ -69,8 +72,8 @@ namespace StockMarket.Tests
             var result = await _stockController.GetStock(stockID);
 
             Assert.That(result, Is.Not.Null);
-            //Assert.That(result, Is.TypeOf<OkObjectResult>());
-            Assert.That(result, Is.TypeOf<ActionResult<Stock>>());
+            Assert.That(result.Result, Is.TypeOf<OkObjectResult>());
+            //Assert.That(result.Result, Is.TypeOf<ActionResult<Stock>>());
 
             var okResult = result.Result as OkObjectResult;
             Assert.That(okResult, Is.Not.Null);
@@ -81,6 +84,7 @@ namespace StockMarket.Tests
             Assert.That(stockID, Is.EqualTo(stock.ID));
         }
 
+        [Test]
         [TestCase(777)]
         [TestCase(888)]
         [TestCase(999)]
@@ -98,6 +102,7 @@ namespace StockMarket.Tests
             Assert.That(errorMessage, Is.Not.Null.And.Contains("does not exist"));
         }
 
+        [Test]
         [TestCase(1, "AMZN", "Amazon.com Inc.", 2200.0, "https://example.com/amazon-logo.png")]
         [TestCase(2, "NFLX", "Netflix Inc.", 302.0, "https://example.com/new-netflix-logo.png")]
         [TestCase(3, "TSLA", "Tesla Inc.", 888.0, "https://example.com/old-tesla-logo.png")]
@@ -140,6 +145,7 @@ namespace StockMarket.Tests
             Assert.That(newLogoURL, Is.EqualTo(updatedStock.LogoURL));
         }
 
+        [Test]
         [TestCase(1000, "AMZN", "Amazon.com Inc.", 1895.88, "https://example.com/amazon-logo.png")]
         [TestCase(999, "NFLX", "Netflix Inc.", 311.67, "https://example.com/new-netflix-logo.png")]
         [TestCase(998, "TSLA", "Tesla Inc.", 828.2, "https://example.com/old-tesla-logo.png")]
@@ -159,6 +165,7 @@ namespace StockMarket.Tests
             Assert.That(result.Result, Is.TypeOf<NotFoundResult>());
         }
 
+        [Test]
         [TestCase(1)]
         [TestCase(2)]
         [TestCase(3)]
@@ -176,6 +183,7 @@ namespace StockMarket.Tests
             Assert.That(successMessage, Is.Not.Null.And.Contains("successfully deleted"));
         }
 
+        [Test]
         [TestCase(111)]
         [TestCase(222)]
         [TestCase(333)]

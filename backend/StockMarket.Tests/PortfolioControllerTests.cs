@@ -1,6 +1,13 @@
 ﻿
+using System.Dynamic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using StockMarket.TransferModels;
+
+
 namespace StockMarket.Tests
 {
+    [TestFixture]
     public class PortfolioControllerTests
     {
         private PortfolioController _portfolioController;
@@ -10,7 +17,8 @@ namespace StockMarket.Tests
         public void Setup()
         {
             var options = new DbContextOptionsBuilder<StockMarketContext>()
-                .UseInMemoryDatabase(databaseName: "MemTestPortdolioDb")
+                //.UseInMemoryDatabase(databaseName: "MemTestPortdolioDb")
+                .UseInMemoryDatabase(databaseName: $"TestDatabasePortfolios_{Guid.NewGuid()}")
                 .Options;
 
             _context = new StockMarketContext(options);
@@ -18,7 +26,7 @@ namespace StockMarket.Tests
             var initialData = new List<Portfolio>
             {
                 new Portfolio { OwnerName = "Milojko Pantic", BankName = "Intesa", BankBalance = 11250.0, RiskTolerance = 10, InvestmentStrategy = "Long-Term Growth" },
-                new Portfolio { OwnerName = "Radmila Kostadinovic", BankName = "Uni Credit", BankBalance = 6789.55, RiskTolerance = 8, InvestmentStrategy = "Index Fund Investing" },
+                new Portfolio { OwnerName = "Radmila Kostadinovic", BankName = "UniCredit", BankBalance = 6789.55, RiskTolerance = 8, InvestmentStrategy = "Index Fund Investing" },
                 new Portfolio { OwnerName = "Jelisaveta Petronijevic", BankName = "BNP Paribas", BankBalance = 56901.0, RiskTolerance = 25, InvestmentStrategy = "Diversification" },
             };
 
@@ -68,15 +76,20 @@ namespace StockMarket.Tests
             var result = await _portfolioController.GetPortfolio(portfolioID);
 
             Assert.That(result, Is.Not.Null);
-            Assert.That(result.Result, Is.TypeOf<ActionResult<Portfolio>>());
+            Assert.That(result.Result, Is.TypeOf<OkObjectResult>());
 
             var okResult = result.Result as OkObjectResult;
             Assert.That(okResult, Is.Not.Null);
 
-            //var portfolio = okResult.Value as Portfolio;
-            //Assert.That(portfolio, Is.Not.Null);
+            var resultObject = okResult.Value as PortfolioResponse;
 
-            //Assert.That(portfolioID, Is.EqualTo(portfolio.ID));
+            Console.WriteLine($"Result Object: {resultObject}");
+
+            //Assert.That(resultObject, Is.Not.Null);
+
+            // Check Portfolio
+            //Assert.That(resultObject.portfolio, Is.Not.Null);
+            //Assert.That(resultObject.portfolio.ID, Is.EqualTo(portfolioID));
         }
 
         [TestCase(777)]
