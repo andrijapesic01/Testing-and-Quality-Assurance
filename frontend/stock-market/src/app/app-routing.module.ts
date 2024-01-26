@@ -11,12 +11,11 @@ import { UpdateStockComponent } from './components/update-stock/update-stock.com
 const routes: Routes = [
   {path:'add-stock', component: AddStockComponent},
   {path:'add-portfolio', component: AddPortfolioComponent},
-  {path:'home', component: StocksComponent},
+  {path:'stocks', component: StocksComponent},
   {path:'portfolio/:id', component: PortfolioComponent},
   {path:'update-portfolio/:id', component: UpdatePortfolioComponent},
   {path:'update-stock/:id', component: UpdateStockComponent},
   {path:'portfolios', component: PortfoliosComponent},
-
 ];
 
 @NgModule({
