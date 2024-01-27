@@ -1,26 +1,26 @@
-<div class="add-portfolio-container">
-    <h2>Add Portfolio</h2>
-    <form [formGroup]="portfolioForm" (ngSubmit)="onSubmit()">
+<div class="add-portfolio-container" data-testid="add-portfolio-container">
+    <h2 data-testid="portfolio-heading">Add Portfolio</h2>
+    <form [formGroup]="portfolioForm" (ngSubmit)="onSubmit()" data-testid="portfolio-form">
         <div class="form-group">
             <label for="ownerName">Owner Name:</label>
-            <input type="text" formControlName="ownerName" id="ownerName">
+            <input type="text" formControlName="ownerName" id="ownerName" data-testid="ownerName-input">
         </div>
         <div class="form-group">
             <label for="bankName">Bank Name:</label>
-            <input type="text" formControlName="bankName" id="bankName">
+            <input type="text" formControlName="bankName" id="bankName" data-testid="bankName-input">
         </div>
         <div class="form-group">
             <label for="bankBalance">Bank Balance:</label>
-            <input type="number" formControlName="bankBalance" id="bankBalance">
+            <input type="number" formControlName="bankBalance" id="bankBalance" data-testid="bankBalance-input">
         </div>
         <div class="form-group">
             <label for="riskTolerance">Risk Tolerance:</label>
-            <input type="number" formControlName="riskTolerance" id="riskTolerance">
+            <input type="number" formControlName="riskTolerance" id="riskTolerance" data-testid="riskTolerance-input">
         </div>
         <div class="form-group">
             <label for="investmentStrategy">Investment Strategy:</label>
-            <input type="text" formControlName="investmentStrategy" id="investmentStrategy">
+            <input type="text" formControlName="investmentStrategy" id="investmentStrategy" data-testid="investmentStrategy-input">
         </div>
-        <button type="submit" mat-raised-button color="primary" class="center-button">Add Portfolio</button>
+        <button type="submit" mat-raised-button color="primary" class="center-button" data-testid="add-portfolio-button">Add Portfolio</button>
     </form>
 </div>

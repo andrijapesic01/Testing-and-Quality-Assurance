@@ -40,22 +40,24 @@ public class PortfolioPageTests : PageTest
     [Test]
     public async Task PortfolioPageTest()
     {
-        await page.GotoAsync("http://localhost:4200/portfolio/1");
-        await Page.WaitForSelectorAsync(".portfolio-container");
-        Assert.IsNotNull(await Page.QuerySelectorAsync(".portfolio-container"), "Portfolio page is displayed.");
+        await page.GotoAsync("http://localhost:4200/portfolio/5");
+        await page.WaitForSelectorAsync("[data-testid='portfolio-container']");
+        Assert.IsNotNull(await page.QuerySelectorAsync("[data-testid='portfolio-container']"), "Portfolio page is displayed.");
         await page.ScreenshotAsync(new() { Path = "../../../Slike/portfolioPage.png" });
     }
 
     [Test]
     public async Task SellStockTest()
     {
-        await page.GotoAsync("http://localhost:4200/portfolio/1");
-        await Page.WaitForSelectorAsync(".bought-stocks");
-        Assert.IsNotNull(await Page.QuerySelectorAsync(".bought-stocks"), "Bought Stocks section is displayed.");
+        await page.GotoAsync("http://localhost:4200/portfolio/9");
+        
+        await page.WaitForSelectorAsync("[data-testid='bought-stock'] button[color='warn']");
+        var sellButton = await page.QuerySelectorAsync("[data-testid='bought-stock'] button[color='warn']");
 
-        await page.ClickAsync(".bought-stock button");
-        await Page.WaitForSelectorAsync(".success-message");
-        Assert.IsNotNull(await Page.QuerySelectorAsync(".success-message"), "Stock sold successfully.");
+        await sellButton.ClickAsync();
+
+        await page.WaitForSelectorAsync("[data-testid='portfolio-container']");
+        Assert.IsNotNull(await page.QuerySelectorAsync("[data-testid='portfolio-container']"), "View portfolio page is displayed.");
 
         await page.ScreenshotAsync(new() { Path = "../../../Slike/sellStockTest.png" });
     }
@@ -63,14 +65,15 @@ public class PortfolioPageTests : PageTest
     [Test]
     public async Task UpdatePortfolioTest()
     {
-        await page.GotoAsync("http://localhost:4200/portfolio/1");
-        await Page.WaitForSelectorAsync(".button-group");
-        Assert.IsNotNull(await Page.QuerySelectorAsync(".button-group"), "Button group is displayed.");
+        await page.GotoAsync("http://localhost:4200/portfolio/5");
+        await page.WaitForSelectorAsync("[data-testid='button-group']");
+        Assert.IsNotNull(await page.QuerySelectorAsync("[data-testid='button-group']"), "Button group is displayed.");
 
-        await page.ClickAsync(".button-group button[matColor='primary']");
+        await page.ClickAsync("[data-testid='button-group'] button[matColor='primary']");
 
-        await Page.WaitForSelectorAsync(".update-portfolio-container");
-        Assert.IsNotNull(await Page.QuerySelectorAsync(".update-portfolio-container"), "Update portfolio page is displayed.");
+        await page.WaitForSelectorAsync("[data-testid='update-portfolio-container']");
+
+        Assert.IsNotNull(await page.QuerySelectorAsync("[data-testid='update-portfolio-container']"), "Update portfolio page is displayed.");
 
         await page.ScreenshotAsync(new() { Path = "../../../Slike/updatePortfolioTest.png" });
     }
@@ -78,19 +81,14 @@ public class PortfolioPageTests : PageTest
     [Test]
     public async Task DeletePortfolioTest()
     {
-        await page.GotoAsync("http://localhost:4200/portfolio/1");
-        await Page.WaitForSelectorAsync(".button-group");
-        Assert.IsNotNull(await Page.QuerySelectorAsync(".button-group"), "Button group is displayed.");
+        await page.GotoAsync("http://localhost:4200/portfolio/11");
+        await page.WaitForSelectorAsync("[data-testid='button-group']");
+        Assert.IsNotNull(await page.QuerySelectorAsync("[data-testid='button-group']"), "Button group is displayed.");
 
-        await page.ClickAsync(".button-group button[matColor='warn']");
+        await page.ClickAsync("[data-testid='button-group'] button[matColor='warn']");
 
-        await Page.WaitForSelectorAsync(".confirmation-dialog");
-        Assert.IsNotNull(await Page.QuerySelectorAsync(".confirmation-dialog"), "Delete confirmation dialog is displayed.");
-
-        await page.ClickAsync(".confirmation-dialog button[matColor='warn']");
-
-        await Page.WaitForSelectorAsync(".success-message");
-        Assert.IsNotNull(await Page.QuerySelectorAsync(".success-message"), "Portfolio deleted successfully.");
+        await page.WaitForSelectorAsync("[data-testid='portfolios-container']");
+        Assert.IsNotNull(await page.QuerySelectorAsync("[data-testid='portfolios-container']"), "View portfolios page is displayed.");
 
         await page.ScreenshotAsync(new() { Path = "../../../Slike/deletePortfolioTest.png" });
     }

@@ -41,8 +41,8 @@ public class PortfoliosPageTests : PageTest
     public async Task PortfoliosPageTest()
     {
         await page.GotoAsync("http://localhost:4200/portfolios");
-        await Page.WaitForSelectorAsync(".portfolios-container");
-        Assert.IsNotNull(await Page.QuerySelectorAsync(".portfolios-container"), "Portfolios page is displayed.");
+        await page.WaitForSelectorAsync("[data-testid='portfolios-container']");
+        Assert.IsNotNull(await page.QuerySelectorAsync("[data-testid='portfolios-container']"), "Portfolios page is displayed.");
 
         await page.ScreenshotAsync(new() { Path = "../../../Slike/portfoliosPageTest.png" });
     }
@@ -51,16 +51,19 @@ public class PortfoliosPageTests : PageTest
     public async Task ViewPortfolioTest()
     {
         await page.GotoAsync("http://localhost:4200/portfolios");
-        await Page.WaitForSelectorAsync(".button-group");
-        Assert.IsNotNull(await Page.QuerySelectorAsync(".button-group"), "Button group is displayed.");
+        
+        await page.WaitForSelectorAsync("[data-testid='portfolio-item'] button[color='primary']");
+        var viewButton = await page.QuerySelectorAsync("[data-testid='portfolio-item'] button[color='primary']");
 
-        await page.ClickAsync(".button-group button[color='primary']");
+        await viewButton.ClickAsync();
 
-        await Page.WaitForSelectorAsync(".portfolio-container");
-        Assert.IsNotNull(await Page.QuerySelectorAsync(".portfolio-container"), "View portfolio page is displayed.");
+        //added
+        await page.WaitForSelectorAsync("[data-testid='portfolio-container']");
+        Assert.IsNotNull(await page.QuerySelectorAsync("[data-testid='portfolio-container']"), "Portfolio page is displayed.");
 
         await page.ScreenshotAsync(new() { Path = "../../../Slike/viewPortfolioTest.png" });
     }
+
 
     [TearDown]
     public async Task Teardown()

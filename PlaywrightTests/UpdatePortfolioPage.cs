@@ -40,11 +40,10 @@ public class UpdatePorfolioPageTests : PageTest
     [Test]
     public async Task UpdatePortfolioPageTest()
     {
-        int portfolioId = 5;
 
-        await page.GotoAsync($"http://localhost:4200/update-portfolio/{portfolioId}");
-        await Page.WaitForSelectorAsync(".add-portfolio-container");
-        Assert.IsNotNull(await Page.QuerySelectorAsync(".add-portfolio-container"), "Update Portfolio page is displayed.");
+        await page.GotoAsync($"http://localhost:4200/update-portfolio/5");
+        await page.WaitForSelectorAsync("[data-testid='update-portfolio-container']");
+        Assert.IsNotNull(await page.QuerySelectorAsync("[data-testid='update-portfolio-container']"), "Update Portfolio page is displayed.");
 
         await page.ScreenshotAsync(new() { Path = "../../../Slike/updatePortfolioPageTest.png" });
     }
@@ -52,23 +51,21 @@ public class UpdatePorfolioPageTests : PageTest
     [Test]
     public async Task UpdatePortfolioFormSubmissionTest()
     {
-        int portfolioId = 5;
+        await page.GotoAsync($"http://localhost:4200/update-portfolio/5");
+        await page.WaitForSelectorAsync("[data-testid='update-portfolio-button']");
+        Assert.IsNotNull(await page.QuerySelectorAsync("[data-testid='update-portfolio-button']"), "Update Portfolio form is displayed.");
 
-        await page.GotoAsync($"http://localhost:4200/update-portfolio/{portfolioId}");
-        await Page.WaitForSelectorAsync(".center-button");
-        Assert.IsNotNull(await Page.QuerySelectorAsync(".center-button"), "Update Portfolio form is displayed.");
+        await page.FillAsync("[data-testid='ownerName-input']", "Vlastimir Ugljesic");
+        await page.FillAsync("[data-testid='bankName-input']", "AIK Banka");
+        await page.FillAsync("[data-testid='bankBalance-input']", "10892");
+        await page.FillAsync("[data-testid='riskTolerance-input']", "25");
+        await page.FillAsync("[data-testid='investmentStrategy-input']", "Conservative");
 
-        await page.TypeAsync("#ownerName", "New Owner");
-        await page.TypeAsync("#bankName", "New Bank");
-        await page.TypeAsync("#bankBalance", "10000");
-        await page.TypeAsync("#riskTolerance", "5");
-        await page.TypeAsync("#investmentStrategy", "Conservative");
+        await page.ClickAsync("[data-testid='update-portfolio-button']");
 
-        await page.ClickAsync(".center-button");
-
-        await Page.WaitForSelectorAsync(".portfolio-container");
-        Assert.IsNotNull(await Page.QuerySelectorAsync(".portfolio-container"), "View Portfolio page is displayed after form submission.");
-
+        await page.WaitForSelectorAsync("[data-testid='portfolio-container']");
+        Assert.IsNotNull(await page.QuerySelectorAsync("[data-testid='portfolio-container']"), "View Portfolio page is displayed after form submission.");
+        
         await page.ScreenshotAsync(new() { Path = "../../../Slike/updatePortfolioFormSubmissionTest.png" });
     }
 

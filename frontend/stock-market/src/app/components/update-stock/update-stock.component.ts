@@ -86,7 +86,7 @@ export class UpdateStockComponent implements OnInit {
       this.stockService.updateStock(this.stockId, formData).subscribe(
         (response: Stock) => {
           console.log('Stock updated successfully', response);
-          this.router.navigate(['/home']);
+          this.router.navigate(['/stocks']);
         },
         (error) => {
           console.error('Error updating stock', error);

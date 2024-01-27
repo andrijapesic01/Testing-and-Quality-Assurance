@@ -1,22 +1,22 @@
-<div class="update-stock-container">
-  <h2>Update Stock</h2>
-  <form [formGroup]="stockForm" (ngSubmit)="submitStock()">
+<div class="update-stock-container" data-testid="update-stock-container">
+  <h2 data-testid="update-stock-heading">Update Stock</h2>
+  <form [formGroup]="stockForm" (ngSubmit)="submitStock()" data-testid="update-stock-form">
     <div class="form-group">
-      <label for="symbol">Symbol:</label>
-      <input type="text" formControlName="symbol" id="symbol">
+      <label for="symbol" data-testid="symbol-label">Symbol:</label>
+      <input type="text" formControlName="symbol" id="symbol" data-testid="symbol-input">
     </div>
     <div class="form-group">
-      <label for="company">Company:</label>
-      <input type="text" formControlName="company" id="company">
+      <label for="company" data-testid="company-label">Company:</label>
+      <input type="text" formControlName="company" id="company" data-testid="company-input">
     </div>
     <div class="form-group">
-      <label for="currentPrice">Current Price:</label>
-      <input type="number" formControlName="currentPrice" id="currentPrice">
+      <label for="currentPrice" data-testid="currentPrice-label">Current Price:</label>
+      <input type="number" formControlName="currentPrice" id="currentPrice" data-testid="currentPrice-input">
     </div>
     <div class="form-group">
-      <label for="logoUrl">Logo URL:</label>
-      <input type="file" formControlName="logoUrl" id="logoUrl" accept="image/*" (change)="onFileSelected($event)">
+      <label for="logoUrl" data-testid="logoUrl-label">Logo URL:</label>
+      <input type="file" formControlName="logoUrl" id="logoUrl" accept="image/*" (change)="onFileSelected($event)" data-testid="logoUrl-input">
     </div>
-    <button type="submit" mat-raised-button color="primary" class="center-button">Update Stock</button>
+    <button type="submit" mat-raised-button color="primary" class="center-button" data-testid="update-stock-button">Update Stock</button>
   </form>
 </div>

@@ -1,36 +1,36 @@
-<div class="stocks-container">
-    <div *ngFor="let stock of stocks" class="stock-item">
-      <div class="stock-image">
+<div class="stocks-container" data-testid="stocks-container">
+    <div *ngFor="let stock of stocks" class="stock-item" data-testid="stock-item">
+      <div class="stock-image" data-testid="stock-image">
         <img *ngIf="stock.logoURL" [src]="getFullImageUrl(stock)" alt="Stock Logo">
       </div>
-      <div class="stock-details">
-        <div class="stock-basic-info">
+      <div class="stock-details" data-testid="stock-details">
+        <div class="stock-basic-info" data-testid="stock-basic-info">
           <p><strong>Symbol:</strong> {{ stock.symbol }}</p>
           <p><strong>Company:</strong> {{ stock.company }}</p>
           <p><strong>Current Price:</strong> {{ stock.currentPrice | currency:'USD':'symbol':'1.2-2' }}</p>
         </div>
-        <div class="stock-price-change" [ngClass]="{'positive': stock.priceChange > 0, 'negative': stock.priceChange < 0}">
+        <div class="stock-price-change" data-testid="stock-price-change" [ngClass]="{'positive': stock.priceChange > 0, 'negative': stock.priceChange < 0}">
           <p><strong>Price Change:</strong> {{ stock.priceChange | currency:'USD':'symbol':'1.2-2' }}</p>
           <p><strong>Percentage Change:</strong> {{ stock.percentChange }}%</p>
         </div>
-        <button mat-raised-button color="primary" (click)="updateStock(stock.id)">
+        <button mat-raised-button color="primary" (click)="updateStock(stock.id)" data-testid="update-stock-button">
           <mat-icon>update</mat-icon> Update
         </button>
-        <button mat-raised-button color="warn" (click)="deleteStock(stock.id)">
+        <button mat-raised-button color="warn" (click)="deleteStock(stock.id)" data-testid="delete-stock-button">
           <mat-icon>delete</mat-icon> Delete 
         </button>
       </div>
-      <div class="stock-actions">
-        <mat-form-field class="portfolio-selection">
+      <div class="stock-actions" data-testid="stock-actions">
+        <mat-form-field class="portfolio-selection" data-testid="portfolio-selection">
           <mat-label>Select Portfolio</mat-label>
-          <mat-select [(ngModel)]="selectedPortfolio" placeholder="Select Portfolio">
-            <mat-option *ngFor="let portfolio of portfolios" [value]="portfolio">{{ portfolio.ownerName }}</mat-option>
+          <mat-select [(ngModel)]="selectedPortfolio" placeholder="Select Portfolio" data-testid="portfolio-select">
+            <mat-option *ngFor="let portfolio of portfolios" [value]="portfolio" data-testid="portfolio-option">{{ portfolio.ownerName }}</mat-option>
           </mat-select>
         </mat-form-field>
-        <mat-form-field class="quantity-input">
+        <mat-form-field class="quantity-input" data-testid="quantity-input">
           <input matInput type="number" placeholder="Quantity" [(ngModel)]="quantity" min="1">
         </mat-form-field>
-        <button mat-raised-button color="accent" (click)="buyStock(stock)">
+        <button mat-raised-button color="accent" (click)="buyStock(stock)" data-testid="buy-button">
           <mat-icon>shopping_cart</mat-icon> Buy
         </button>
       </div>

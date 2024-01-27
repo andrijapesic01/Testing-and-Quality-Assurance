@@ -36,13 +36,28 @@ public class UpdateStockPageTests : PageTest
             RecordVideoDir = "../../../Videos"
         });
     }
+
+    //[Test]
+    //public async Task UpdateStockPageTest()
+    //{
+    //    int stockId = 2;
+    //    await page.GotoAsync($"http://localhost:4200/update-stock/{stockId}");
+    //    await Page.WaitForSelectorAsync(".update-stock-container");
+    //    Assert.IsNotNull(await Page.QuerySelectorAsync(".update-stock-container"), "Update Stock page is displayed.");
+
+    //    await page.ScreenshotAsync(new() { Path = "../../../Slike/updateStockPageTest.png" });
+    //}
+
     [Test]
     public async Task UpdateStockPageTest()
     {
-        int stockId = 2;
-        await page.GotoAsync($"http://localhost:4200/update-stock/{stockId}");
-        await Page.WaitForSelectorAsync(".update-stock-container");
-        Assert.IsNotNull(await Page.QuerySelectorAsync(".update-stock-container"), "Update Stock page is displayed.");
+        //int stockId = 2;
+        await page.GotoAsync($"http://localhost:4200/update-stock/15");
+
+        await page.WaitForSelectorAsync("[data-testid='update-stock-container']");
+        var updateStockPage = await page.QuerySelectorAsync("[data-testid='update-stock-container']");
+
+        Assert.IsNotNull(updateStockPage, "Update Stock page is displayed.");
 
         await page.ScreenshotAsync(new() { Path = "../../../Slike/updateStockPageTest.png" });
     }
@@ -50,35 +65,26 @@ public class UpdateStockPageTests : PageTest
     [Test]
     public async Task UpdateStockFormSubmissionTest()
     {
-        int stockId = 2;
+        await page.GotoAsync("http://localhost:4200/update-stock/36");
 
-        await page.GotoAsync($"http://localhost:4200/update-stock/{stockId}");
-        await Page.WaitForSelectorAsync(".center-button");
-        Assert.IsNotNull(await Page.QuerySelectorAsync(".center-button"), "Update Stock form is displayed.");
+        await page.WaitForSelectorAsync("[data-testid='update-stock-container']");
 
-        await page.TypeAsync("#symbol", "AAPL");
-        await page.TypeAsync("#company", "Apple Inc.");
-        await page.TypeAsync("#currentPrice", "1500");
+        Assert.IsNotNull(await page.QuerySelectorAsync("[data-testid='update-stock-container']"), "Update Stock page is displayed.");
 
-        await page.SetInputFilesAsync("#logoUrl", new[]
-        {
-        new FilePayload
-        {
-            Name = "logo.png",
-            MimeType = "image/png",
-            Buffer = Convert.FromBase64String("base64-encoded-image-data")
-        }
-    });
+        await page.FillAsync("[data-testid='symbol-input']", "AAPL");
+        await page.FillAsync("[data-testid='company-input']", "Apple Inc.");
+        await page.FillAsync("[data-testid='currentPrice-input']", "1500");
 
-        await page.ClickAsync(".center-button");
+        await page.SetInputFilesAsync("[data-testid='logoUrl-input']", "C:\\Users\\Lenovo\\Desktop\\Projekat Testiranje 2\\logos\\AAPL.png");
 
-        await Page.WaitForSelectorAsync(".home-container");
-        Assert.IsNotNull(await Page.QuerySelectorAsync(".home-container"), "Home page is displayed after form submission.");
+        await page.WaitForSelectorAsync("[data-testid='update-stock-button']");
+        await page.ClickAsync("[data-testid='update-stock-button']");
 
+        await page.WaitForSelectorAsync("[data-testid='stocks-container']");
+        Assert.IsNotNull(await page.QuerySelectorAsync("[data-testid='stocks-container']"), "Stocks page is displayed after form submission.");
 
         await page.ScreenshotAsync(new() { Path = "../../../Slike/updateStockFormSubmissionTest.png" });
     }
-
 
     [TearDown]
     public async Task Teardown()

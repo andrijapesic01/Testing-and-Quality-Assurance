@@ -4,6 +4,7 @@ import { StockModel } from '../../models/stock.model';
 import { Stock } from '../../models/stock';
 import { StockService } from '../../services/stock.service';
 import { FileService } from '../../services/file.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-add-stock',
@@ -15,7 +16,9 @@ export class AddStockComponent {
   selectedFile!: File;
   uploadImgUrl: string = "";
 
-  constructor(private fb: FormBuilder, private stockService: StockService, private fileService: FileService) {
+  constructor(private fb: FormBuilder, private stockService: StockService, private fileService: FileService,
+    private router: Router) {
+      
     this.stockForm = this.fb.group({
       symbol: ['', Validators.required],
       company: ['', Validators.required],
@@ -56,12 +59,13 @@ export class AddStockComponent {
       this.stockService.addStock(stock).subscribe(
         (response: Stock) => {
           console.log('Stock added successfully', response);
+          this.router.navigate(['/stocks']);
         },
         (error) => {
           console.error('Error adding portfolio', error);
         }
       );
-      this.stockForm.reset();
+      //this.stockForm.reset();
     }
   }
 }

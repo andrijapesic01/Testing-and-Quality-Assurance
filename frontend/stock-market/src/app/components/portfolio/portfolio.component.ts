@@ -36,7 +36,10 @@ export class PortfolioComponent implements OnInit {
       boughtStockId: boughtStock.id,
       quantity: boughtStock.quantity
     };
-    this.portfolioService.sellStock(soldStock).subscribe((res) => console.log(res));
+    this.portfolioService.sellStock(soldStock).subscribe((res) => {
+      console.log(res);
+      this.router.navigate(['/portfolio', this.portfolio.id]);
+    });
   }
 
   updatePortfolio(portfolioId: number): void {

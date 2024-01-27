@@ -1,3 +1,7 @@
+using NUnit.Framework.Internal;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using System;
+
 namespace PlaywrightTests;
 
 [Parallelizable(ParallelScope.Self)]
@@ -42,8 +46,8 @@ public class StocksPageTests : PageTest
     {
         await page.GotoAsync("http://localhost:4200/stocks");
 
-        await Page.WaitForSelectorAsync(".stocks-container");
-        Assert.IsNotNull(await Page.QuerySelectorAsync(".stocks-container"), "Stocks page is displayed.");
+        await page.WaitForSelectorAsync("[data-testid='stocks-container']");
+        Assert.IsNotNull(await page.QuerySelectorAsync("[data-testid='stocks-container']"), "Stocks page is displayed.");
 
         await page.ScreenshotAsync(new() { Path = "../../../Slike/stocksPage.png" });
     }
@@ -53,13 +57,13 @@ public class StocksPageTests : PageTest
     {
         await page.GotoAsync("http://localhost:4200/stocks");
 
-        await Page.WaitForSelectorAsync(".stock-item:first-child button[color='primary']");
-        var updateButton = await Page.QuerySelectorAsync(".stock-item:first-child button[color='primary']");
+        await page.WaitForSelectorAsync("[data-testid='stock-item'] button[color='primary']");
+        var updateButton = await page.QuerySelectorAsync("[data-testid='stock-item'] button[color='primary']");
 
         await updateButton.ClickAsync();
 
-        await Page.WaitForSelectorAsync("app-update-stock");
-        var updateStockPage = await Page.QuerySelectorAsync("app-update-stock");
+        await page.WaitForSelectorAsync("[data-testid='update-stock-container']");
+        var updateStockPage = await page.QuerySelectorAsync("[data-testid='update-stock-container']");
 
         Assert.IsNotNull(updateStockPage, "Update Stock page is displayed.");
         await page.ScreenshotAsync(new() { Path = "../../../Slike/updateStockPageClicked.png" });
@@ -70,34 +74,34 @@ public class StocksPageTests : PageTest
     {
         await page.GotoAsync("http://localhost:4200/stocks");
 
-        await Page.WaitForSelectorAsync(".stock-item:first-child button[color='warn']");
-        var deleteButton = await Page.QuerySelectorAsync(".stock-item:first-child button[color='warn']");
+        await page.WaitForSelectorAsync("[data-testid='stock-item'] button[color='warn']");
+        var deleteButton = await page.QuerySelectorAsync("[data-testid='stock-item'] button[color='warn']");
 
         await deleteButton.ClickAsync();
-        await page.ScreenshotAsync(new() { Path = "../../../Slike/deletStockPageClicked.png" });
+        await page.ScreenshotAsync(new() { Path = "../../../Slike/deleteStockPageClicked.png" });
     }
 
+    
     [Test]
     public async Task BuyStockTest()
     {
         await page.GotoAsync("http://localhost:4200/stocks");
-
-        await Page.WaitForSelectorAsync(".stock-item:first-child button[color='accent']");
-        var buyButton = await Page.QuerySelectorAsync(".stock-item:first-child button[color='accent']");
-
-        await buyButton.ClickAsync();
-
-        await Page.WaitForSelectorAsync(".portfolio-selection");
-        await Page.WaitForSelectorAsync(".quantity-input");
-
-        await page.SelectOptionAsync(".portfolio-selection", new[] { "1" });
-
-        await page.ScreenshotAsync(new() { Path = "../../../Slike/deletStockPageClicked.png" });
         
-        await page.TypeAsync(".quantity-input input", "1");
+        await page.ClickAsync("[data-testid='portfolio-selection'] mat-select");
 
-        await page.ClickAsync(".stock-item:first-child button[color='accent']");
+        await page.WaitForSelectorAsync("[data-testid='portfolio-select']");
+        await page.ClickAsync("[data-testid='portfolio-option']:first-child");
+
+        await page.WaitForSelectorAsync("[data-testid='quantity-input']");
+        await page.FillAsync("[data-testid='quantity-input'] input", "2");
+
+        await page.ClickAsync("[data-testid='stock-item'] button[color='accent']");
+
+        await page.WaitForSelectorAsync("[data-testid='portfolio-container']");
+        Assert.IsNotNull(await page.QuerySelectorAsync("[data-testid='portfolio-container']"), "Portfolio page is displayed.");
     }
+
+
 
     [TearDown]
     public async Task Teardown()

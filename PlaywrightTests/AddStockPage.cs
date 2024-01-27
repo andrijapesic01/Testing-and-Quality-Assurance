@@ -41,8 +41,10 @@ public class AddStockPageTests : PageTest
     public async Task AddStockPageTest()
     {
         await page.GotoAsync("http://localhost:4200/add-stock");
-        await Page.WaitForSelectorAsync(".add-stock-container");
-        Assert.IsNotNull(await Page.QuerySelectorAsync(".add-stock-container"), "Add Stock page is displayed.");
+
+        await page.WaitForSelectorAsync("[data-testid='add-stock-container']");
+
+        Assert.IsNotNull(await page.QuerySelectorAsync("[data-testid='add-stock-container']"), "Add Stock page is displayed.");
 
         await page.ScreenshotAsync(new() { Path = "../../../Slike/addStockPageTest.png" });
     }
@@ -51,29 +53,24 @@ public class AddStockPageTests : PageTest
     public async Task AddStockFormSubmissionTest()
     {
         await page.GotoAsync("http://localhost:4200/add-stock");
-        await Page.WaitForSelectorAsync(".center-button");
-        Assert.IsNotNull(await Page.QuerySelectorAsync(".center-button"), "Add Stock form is displayed.");
 
-        await page.TypeAsync("#symbol", "AAPL");
-        await page.TypeAsync("#company", "Apple Inc.");
-        await page.TypeAsync("#currentPrice", "1500");
+        await page.WaitForSelectorAsync("[data-testid='add-stock-container']");
 
-        await page.SetInputFilesAsync("#logoUrl", new[]
-        {
-            new FilePayload
-            {
-                Name = "logo.png",
-                MimeType = "image/png",
-                Buffer = Convert.FromBase64String("base64-encoded-image-data")
-            }
-        });
+        Assert.IsNotNull(await page.QuerySelectorAsync("[data-testid='add-stock-container']"), "Add Stock page is displayed.");
 
-        await page.ClickAsync(".center-button");
+        await page.TypeAsync("[data-testid='symbol-input']", "AAPL");
+        await page.TypeAsync("[data-testid='company-input']", "Apple Inc.");
+        await page.TypeAsync("[data-testid='currentPrice-input']", "1500");
 
-        await Page.WaitForSelectorAsync(".home-container");
-        Assert.IsNotNull(await Page.QuerySelectorAsync(".home-container"), "Home page is displayed after form submission.");
+        await page.SetInputFilesAsync("[data-testid='logoUrl-input']", "C:\\Users\\Lenovo\\Desktop\\Projekat Testiranje 2\\logos\\AAPL.png");
 
-        await page.ScreenshotAsync(new() { Path = "../../../Slike/addStockFormSubmissionTest.png" });
+        await page.WaitForSelectorAsync("[data-testid='add-stock-button']");
+        await page.ClickAsync("[data-testid='add-stock-button']");
+
+        await page.WaitForSelectorAsync("[data-testid='stocks-container']");
+        Assert.IsNotNull(await page.QuerySelectorAsync("[data-testid='stocks-container']"), "Stocks page is displayed after form submission.");
+
+        await page.ScreenshotAsync(new() { Path = "../../../Slike/addStockPageTest.png" });
     }
 
 

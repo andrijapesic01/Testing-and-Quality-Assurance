@@ -53,17 +53,20 @@ export class StocksComponent implements OnInit {
       quantity: this.quantity
     }
 
-    this.portfoliosService.buyStock(buyStock).subscribe((res)=> console.log(res));
-
+    this.portfoliosService.buyStock(buyStock).subscribe((res)=> {
+      console.log(res);
+      //this.router.navigate(['/portfolio', this.selectedPortfolio?.id]);
+    });
+    this.router.navigate(['/portfolio', this.selectedPortfolio?.id]);
     this.selectedPortfolio = undefined;
     this.quantity = 1;
   }
 
   deleteStock(stockId: number) {
     this.stocksService.deleteStock(stockId).subscribe((response) => {
-      console.log(response)
-      this.router.navigate(['/stocks']);
+      console.log(response);
     })
+    this.router.navigate(['/stocks']);
   }
 
   updateStock(stockId: number) {

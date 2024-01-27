@@ -37,29 +37,30 @@ public class AddPorfolioPageTests : PageTest
         });
     }
 
+    
     [Test]
     public async Task AddPortfolioPageTest()
     {
         await page.GotoAsync("http://localhost:4200/add-portfolio");
 
-        await Page.WaitForSelectorAsync(".add-portfolio-container form");
+        await page.WaitForSelectorAsync("[data-testid='add-portfolio-container'] form");
 
-        Assert.IsNotNull(await Page.QuerySelectorAsync(".add-portfolio-container"), "Add Portfolio page is displayed.");
+        Assert.IsNotNull(await page.QuerySelectorAsync("[data-testid='add-portfolio-container']"), "Add Portfolio page is displayed.");
 
-        await page.FillAsync("#ownerName", "John Doe");
-        await page.FillAsync("#bankName", "Sample Bank");
-        await page.FillAsync("#bankBalance", "10000");
-        await page.FillAsync("#riskTolerance", "5");
-        await page.FillAsync("#investmentStrategy", "Aggressive Growth");
-        await page.ClickAsync(".add-portfolio-container form button[type='submit']");
+        await page.FillAsync("[data-testid='ownerName-input']", "Jelisaveta Kostanovic");
+        await page.FillAsync("[data-testid='bankName-input']", "UniCredit");
+        await page.FillAsync("[data-testid='bankBalance-input']", "12345");
+        await page.FillAsync("[data-testid='riskTolerance-input']", "15");
+        await page.FillAsync("[data-testid='investmentStrategy-input']", "Aggressive Growth");
 
-        //await Page.WaitForSelectorAsync(".success-message");
+        await page.WaitForSelectorAsync("[data-testid='add-portfolio-button']");
+        await page.ClickAsync("[data-testid='add-portfolio-button']");
 
-        //Assert.IsNotNull(await Page.QuerySelectorAsync(".success-message"), "Form submitted successfully.");
+        await page.WaitForSelectorAsync("[data-testid='portfolios-container']");
+        Assert.IsNotNull(await page.QuerySelectorAsync("[data-testid='portfolios-container']"), "View portfolios page is displayed.");
 
         await page.ScreenshotAsync(new() { Path = "../../../Slike/addPortfolioPage.png" });
     }
-
 
     [TearDown]
     public async Task Teardown()
