@@ -14,6 +14,16 @@ public class PortfolioController : ControllerBase
     [HttpPost("AddPortfolio")]
     public async Task<ActionResult<Portfolio>> AddPortfolio([FromBody] PortfolioModel pm)
     {
+        if (string.IsNullOrEmpty(pm.OwnerName) || string.IsNullOrEmpty(pm.BankName))
+        {
+            return BadRequest("Invalid portfolio information. OwnerName and BankName are required.");
+        }
+
+        if (pm.BankBalance < 0)
+        {
+            return BadRequest("Invalid bank balance. BankBalance must be a non-negative value.");
+        }
+
         var portfolio = new Portfolio 
         {
             OwnerName = pm.OwnerName,
@@ -32,7 +42,6 @@ public class PortfolioController : ControllerBase
     [HttpGet("GetPortfolio/{id}")]
     public async Task<ActionResult<Portfolio>> GetPortfolio(int id)
     {
-        //var portfolio = await Context.Portfolios.FindAsync(id);
         var portfolio = await Context.Portfolios
             .Include(p => p.BoughtStocks)
             .ThenInclude(bs => bs.Stock)
@@ -47,7 +56,6 @@ public class PortfolioController : ControllerBase
         };
 
         return Ok(ret);
-        //return Ok(portfolio);
     }
 
     [HttpGet("GetAllPortfolios")]
@@ -66,6 +74,11 @@ public class PortfolioController : ControllerBase
             return NotFound();
         }
 
+        if (string.IsNullOrEmpty(pm.OwnerName) || string.IsNullOrEmpty(pm.BankName) || pm.BankBalance < 0)
+        {
+            return BadRequest("Invalid portfolio information");
+        }
+
         portfolio.OwnerName = pm.OwnerName;
         portfolio.BankBalance = pm.BankBalance;
         portfolio.BankName = pm.BankName;
@@ -80,28 +93,21 @@ public class PortfolioController : ControllerBase
     [HttpDelete("DeletePortfolio/{id}")]
     public async Task<ActionResult> DeletePortfolio(int id)
     {
-        // var portfolio = await Context.Portfolios.FindAsync(id);
-        // if (portfolio == null)
-        //     return NotFound("Portfolio with id " + id + " does not exist!");
-
-    var portfolio = await Context.Portfolios
-        .Include(p => p.BoughtStocks)
-        .FirstOrDefaultAsync(p => p.ID == id);
+       
+        var portfolio = await Context.Portfolios
+            .Include(p => p.BoughtStocks)
+            .FirstOrDefaultAsync(p => p.ID == id);
 
         if (portfolio != null)
         {
             portfolio.BoughtStocks.Clear();
 
-            // Remove the Portfolio
             Context.Portfolios.Remove(portfolio);
 
-            // Save changes
             await Context.SaveChangesAsync();
             return Ok("Portfolio with id " + id + " successfully deleted!");
         }
 
-        // Context.Portfolios.Remove(portfolio);
-        // await Context.SaveChangesAsync();
         return NotFound("Portfolio with id " + id + " does not exist!");
     }
 
@@ -112,7 +118,6 @@ public class PortfolioController : ControllerBase
         if(stock == null)
             return NotFound("Stock not found");
 
-        //var portfolio = await Context.Portfolios.FindAsync(bsm.PortfolioId);
         var portfolio = await Context.Portfolios
             .Include(p => p.BoughtStocks)
             .FirstOrDefaultAsync(p => p.ID == bsm.PortfolioId);
@@ -151,10 +156,7 @@ public class PortfolioController : ControllerBase
     [HttpPost("SellStock")]
     public async Task<ActionResult> SellStock([FromBody] SellStockModel ssm)
     {
-        // var stock = await Context.Stocks.FindAsync(ssm.StockId);
-        // if (stock == null)
-        //     return NotFound("Stock not found");
-
+       
         var portfolio = await Context.Portfolios
             .Include(p => p.BoughtStocks)
             .ThenInclude(bs => bs.Stock)
@@ -167,7 +169,7 @@ public class PortfolioController : ControllerBase
         if (soldStock == null || soldStock.Quantity < ssm.Quantity)
             return BadRequest("Invalid sell operation");
 
-        double sellValue = ssm.Quantity /** stock.CurrentPrice*/ * soldStock.Stock.CurrentPrice;
+        double sellValue = ssm.Quantity * soldStock.Stock.CurrentPrice;
         
         portfolio.BankBalance += sellValue;
         soldStock.Quantity -= ssm.Quantity;

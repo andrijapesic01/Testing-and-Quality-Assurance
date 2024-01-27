@@ -17,11 +17,19 @@ namespace StockMarket.Tests
         public void Setup()
         {
             var options = new DbContextOptionsBuilder<StockMarketContext>()
-                //.UseInMemoryDatabase(databaseName: "MemTestPortdolioDb")
                 .UseInMemoryDatabase(databaseName: $"TestDatabasePortfolios_{Guid.NewGuid()}")
                 .Options;
 
             _context = new StockMarketContext(options);
+
+            var initialStocks = new List<Stock>
+            {
+                new Stock { Symbol = "AMZN", Company = "Amazon.com Inc.", CurrentPrice = 3000.0, LogoURL = "https://example.com/amazon-logo.png" },
+                new Stock { Symbol = "NFLX", Company = "Netflix Inc.", CurrentPrice = 500.0, LogoURL = "https://example.com/netflix-logo.png" },
+                new Stock { Symbol = "TSLA", Company = "Tesla Inc.", CurrentPrice = 700.0, LogoURL = "https://example.com/tesla-logo.png" },
+            };
+
+            _context.Stocks.AddRange(initialStocks);
 
             var initialData = new List<Portfolio>
             {
@@ -29,6 +37,17 @@ namespace StockMarket.Tests
                 new Portfolio { OwnerName = "Radmila Kostadinovic", BankName = "UniCredit", BankBalance = 6789.55, RiskTolerance = 8, InvestmentStrategy = "Index Fund Investing" },
                 new Portfolio { OwnerName = "Jelisaveta Petronijevic", BankName = "BNP Paribas", BankBalance = 56901.0, RiskTolerance = 25, InvestmentStrategy = "Diversification" },
             };
+
+            //_context.Portfolios.AddRange(initialData);
+
+            var boughtStocks = new List<BoughtStock>
+            {
+                new BoughtStock { Stock = initialStocks[0], BuyingPrice = 3000.0, Quantity = 10 },
+                new BoughtStock { Stock = initialStocks[1], BuyingPrice = 500.0, Quantity = 5 },
+            };
+
+            initialData[0].BoughtStocks = boughtStocks;
+
 
             _context.Portfolios.AddRange(initialData);
             _context.SaveChanges();
@@ -68,6 +87,68 @@ namespace StockMarket.Tests
             Assert.That(investmentStrategy, Is.EqualTo(addedPortfolio.InvestmentStrategy));
         }
 
+        [Test]
+        public async Task AddPortfolio_MissingInformation_ReturnsBadRequest()
+        {
+            var invalidPortfolioModel = new PortfolioModel
+            {
+                BankBalance = 10000.0,
+                RiskTolerance = 15,
+                InvestmentStrategy = "Long-term investment"
+            };
+
+            var actionResult = await _portfolioController.AddPortfolio(invalidPortfolioModel);
+
+            Assert.That(actionResult, Is.Not.Null);
+            Assert.That(actionResult.Result, Is.TypeOf<BadRequestObjectResult>());
+
+            var badRequest = actionResult.Result as BadRequestObjectResult;
+            Assert.That(badRequest, Is.Not.Null);
+
+            var errorMessage = badRequest.Value as string;
+            Assert.That(errorMessage, Is.Not.Null.And.Contains("Invalid portfolio information"));
+        }
+
+        [Test]
+        public async Task AddPortfolio_InvalidBankBalanceInformation_ReturnsBadRequest()
+        {
+            var invalidPortfolioModel = new PortfolioModel
+            {
+                OwnerName = "Viktorija Nedeljkovic",
+                BankName = "Intesa", 
+                BankBalance = -1500.0,
+                RiskTolerance = 15,
+                InvestmentStrategy = "Long-term investment"
+            };
+
+            var actionResult = await _portfolioController.AddPortfolio(invalidPortfolioModel);
+
+            Assert.That(actionResult, Is.Not.Null);
+            Assert.That(actionResult.Result, Is.TypeOf<BadRequestObjectResult>());
+
+            var badRequest = actionResult.Result as BadRequestObjectResult;
+            Assert.That(badRequest, Is.Not.Null);
+
+            var errorMessage = badRequest.Value as string;
+            Assert.That(errorMessage, Is.Not.Null.And.Contains("Invalid bank balance"));
+        }
+
+        [Test]
+        public async Task GetAllPortfolios_ReturnsListOfPortfolios()
+        {
+            var result = await _portfolioController.GetAllPortfolios();
+
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Result, Is.TypeOf<OkObjectResult>());
+
+            var okResult = result.Result as OkObjectResult;
+            Assert.That(okResult, Is.Not.Null);
+
+            var portfolios = okResult.Value as List<Portfolio>;
+            Assert.That(portfolios, Is.Not.Null.And.Not.Empty);
+            Assert.That(portfolios.Count, Is.EqualTo(3));
+        }
+
         [TestCase(1)]
         [TestCase(2)]
         [TestCase(3)]
@@ -81,15 +162,6 @@ namespace StockMarket.Tests
             var okResult = result.Result as OkObjectResult;
             Assert.That(okResult, Is.Not.Null);
 
-            var resultObject = okResult.Value as PortfolioResponse;
-
-            Console.WriteLine($"Result Object: {resultObject}");
-
-            //Assert.That(resultObject, Is.Not.Null);
-
-            // Check Portfolio
-            //Assert.That(resultObject.portfolio, Is.Not.Null);
-            //Assert.That(resultObject.portfolio.ID, Is.EqualTo(portfolioID));
         }
 
         [TestCase(777)]
@@ -162,6 +234,27 @@ namespace StockMarket.Tests
             Assert.That(result.Result, Is.TypeOf<NotFoundResult>());
         }
 
+        [Test]
+        public async Task UpdatePortfolio_MissingInformation_ReturnsBadRequest()
+        {
+            var invalidPortfolioModel = new PortfolioModel
+            {
+                RiskTolerance = 15,
+                InvestmentStrategy = "Long-term investment"
+            };
+
+            var actionResult = await _portfolioController.UpdatePortfolio(1, invalidPortfolioModel);
+
+            Assert.That(actionResult, Is.Not.Null);
+            Assert.That(actionResult.Result, Is.TypeOf<BadRequestObjectResult>());
+
+            var badRequest = actionResult.Result as BadRequestObjectResult;
+            Assert.That(badRequest, Is.Not.Null);
+
+            var errorMessage = badRequest.Value as string;
+            Assert.That(errorMessage, Is.Not.Null.And.Contains("Invalid portfolio information"));
+        }
+
         [TestCase(1)]
         [TestCase(2)]
         [TestCase(3)]
@@ -194,6 +287,137 @@ namespace StockMarket.Tests
 
             var errorMessage = notFoundResult.Value as string;
             Assert.That(errorMessage, Is.Not.Null.And.Contains("does not exist"));
+        }
+
+        [TestCase(1, 1, 1)]
+        public async Task BuyStock_SuccessfulPurchase_ReturnsOkResult(int portfolioId, int stockId, int quantity)
+        {
+            var buyStockModel = new BuyStockModel
+            {
+                PortfolioId = portfolioId,
+                StockId = stockId,
+                Quantity = quantity
+            };
+
+            var actionResult = await _portfolioController.BuyStock(buyStockModel);
+
+            Assert.That(actionResult, Is.Not.Null);
+            Assert.That(actionResult, Is.TypeOf<OkObjectResult>());
+
+        }
+
+        [TestCase(1, 1, 100)]
+        public async Task BuyStock_InsufficientFunds_ReturnsBadRequest(int portfolioId, int stockId, int quantity)
+        {
+            var buyStockModel = new BuyStockModel
+            {
+                PortfolioId = portfolioId,
+                StockId = stockId,
+                Quantity = quantity
+            };
+
+            var actionResult = await _portfolioController.BuyStock(buyStockModel);
+
+            Assert.That(actionResult, Is.Not.Null);
+            Assert.That(actionResult, Is.TypeOf<BadRequestObjectResult>());
+
+            var badRequest = actionResult as BadRequestObjectResult;
+            Assert.That(badRequest, Is.Not.Null);
+
+            var errorMessage = badRequest.Value as string;
+            Assert.That(errorMessage, Is.Not.Null.And.Contains("Insufficient funds"));
+        }
+
+        [TestCase(1, 999, 5)]
+        public async Task BuyStock_NonExistingStock_ReturnsNotFound(int portfolioId, int stockId, int quantity)
+        {
+            var buyStockModel = new BuyStockModel
+            {
+                PortfolioId = portfolioId,
+                StockId = stockId,
+                Quantity = quantity
+            };
+
+            var actionResult = await _portfolioController.BuyStock(buyStockModel);
+
+            Assert.That(actionResult, Is.Not.Null);
+            Assert.That(actionResult, Is.TypeOf<NotFoundObjectResult>());
+
+            var notFoundResult = actionResult as NotFoundObjectResult;
+            Assert.That(notFoundResult, Is.Not.Null);
+
+            var errorMessage = notFoundResult.Value as string;
+            Assert.That(errorMessage, Is.Not.Null.And.Contains("Stock not found"));
+        }
+
+        [TestCase(999, 1, 5)]
+        public async Task BuyStock_NonExistingPortfolio_ReturnsNotFound(int portfolioId, int stockId, int quantity)
+        {
+            var buyStockModel = new BuyStockModel
+            {
+                PortfolioId = portfolioId,
+                StockId = stockId,
+                Quantity = quantity
+            };
+
+            var actionResult = await _portfolioController.BuyStock(buyStockModel);
+
+            Assert.That(actionResult, Is.Not.Null);
+            Assert.That(actionResult, Is.TypeOf<NotFoundObjectResult>());
+
+            var notFoundResult = actionResult as NotFoundObjectResult;
+            Assert.That(notFoundResult, Is.Not.Null);
+
+            var errorMessage = notFoundResult.Value as string;
+            Assert.That(errorMessage, Is.Not.Null.And.Contains("Portfolio not found"));
+        }
+
+        [TestCase(1, 1, 5)]
+        public async Task SellStock_SuccessfulSale_ReturnsOkResult(int portfolioId, int boughtStockId, int quantity)
+        {
+            var sellStockModel = new SellStockModel
+            {
+                PortfolioId = portfolioId,
+                BoughtStockId = boughtStockId,
+                Quantity = quantity
+            };
+
+            var actionResult = await _portfolioController.SellStock(sellStockModel);
+
+            Assert.That(actionResult, Is.Not.Null);
+            Assert.That(actionResult, Is.TypeOf<OkObjectResult>());
+        }
+
+        [TestCase(1, 1, 100)]
+        public async Task SellStock_InvalidSale_ReturnsBadRequest(int portfolioId, int boughtStockId, int quantity)
+        {
+            var sellStockModel = new SellStockModel
+            {
+                PortfolioId = portfolioId,
+                BoughtStockId = boughtStockId,
+                Quantity = quantity
+            };
+
+            var actionResult = await _portfolioController.SellStock(sellStockModel);
+
+            Assert.That(actionResult, Is.Not.Null);
+            Assert.That(actionResult, Is.TypeOf<BadRequestObjectResult>());
+        }
+
+        [TestCase(1, 999, 5)]
+        public async Task SellStock_NonExistingStock_ReturnsBadRequest(int portfolioId, int boughtStockId, int quantity)
+        {
+            var sellStockModel = new SellStockModel
+            {
+                PortfolioId = portfolioId,
+                BoughtStockId = boughtStockId,
+                Quantity = quantity
+            };
+
+            var actionResult = await _portfolioController.SellStock(sellStockModel);
+
+            Assert.That(actionResult, Is.Not.Null);
+            Assert.That(actionResult, Is.TypeOf<BadRequestObjectResult>());
         }
 
         [TearDown]

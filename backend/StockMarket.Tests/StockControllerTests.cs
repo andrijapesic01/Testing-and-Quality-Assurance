@@ -12,7 +12,6 @@ namespace StockMarket.Tests
         public void Setup()
         {
             var options = new DbContextOptionsBuilder<StockMarketContext>()
-                //.UseInMemoryDatabase(databaseName: "TestDatabaseStocks")
                 .UseInMemoryDatabase(databaseName: $"TestDatabaseStocks_{Guid.NewGuid()}")
                 .Options;
 
@@ -27,7 +26,6 @@ namespace StockMarket.Tests
 
             _context.Stocks.AddRange(initialData);
             _context.SaveChanges();
-
 
             _stockController = new StockController(_context);
         }
@@ -64,6 +62,51 @@ namespace StockMarket.Tests
         }
 
         [Test]
+        public async Task AddStock_InvalidData_ReturnsBadRequest()
+        {
+            var stockModel = new StockModel
+            {
+                Symbol = "AMD",
+                CurrentPrice = 555.5,
+                LogoURL = "amd-logo.png"
+            };
+
+            var actionResult = await _stockController.AddStock(stockModel);
+
+            Assert.That(actionResult, Is.Not.Null);
+            Assert.That(actionResult.Result, Is.TypeOf<BadRequestObjectResult>());
+
+            var badRequestResult = actionResult.Result as BadRequestObjectResult;
+            Assert.That(badRequestResult, Is.Not.Null);
+
+            var errorMessage = badRequestResult.Value as string;
+            Assert.That(errorMessage, Is.Not.Null.And.Contains("Invalid stock data"));
+        }
+
+        [Test]
+        public async Task AddStock_NegativeStockPrice_ReturnsBadRequest()
+        {
+            var stockModel = new StockModel
+            {
+                Symbol = "AMD",
+                Company = "Advanced Micro Devices Inc.",
+                CurrentPrice = -555.5,
+                LogoURL = "amd-logo.png"
+            };
+
+            var actionResult = await _stockController.AddStock(stockModel);
+
+            Assert.That(actionResult, Is.Not.Null);
+            Assert.That(actionResult.Result, Is.TypeOf<BadRequestObjectResult>());
+
+            var badRequestResult = actionResult.Result as BadRequestObjectResult;
+            Assert.That(badRequestResult, Is.Not.Null);
+
+            var errorMessage = badRequestResult.Value as string;
+            Assert.That(errorMessage, Is.Not.Null.And.Contains("Invalid stock data"));
+        }
+
+        [Test]
         [TestCase(1)]
         [TestCase(2)]
         [TestCase(3)]
@@ -73,7 +116,6 @@ namespace StockMarket.Tests
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result.Result, Is.TypeOf<OkObjectResult>());
-            //Assert.That(result.Result, Is.TypeOf<ActionResult<Stock>>());
 
             var okResult = result.Result as OkObjectResult;
             Assert.That(okResult, Is.Not.Null);
@@ -127,17 +169,6 @@ namespace StockMarket.Tests
             var updatedStock = okResult.Value as Stock;
             Assert.That(updatedStock, Is.Not.Null);
 
-            //var result = await _stockController.UpdateStock(stockID, stockModel);
-
-            //Assert.That(result, Is.Not.Null);
-            //Assert.That(result, Is.TypeOf<OkObjectResult>());
-
-            //var okResult = result.Result as OkObjectResult;
-            //Assert.That(okResult, Is.Not.Null);
-
-            //var updatedStock = okResult.Value as Stock;
-            //Assert.That(updatedStock, Is.Not.Null);
-
             Assert.That(stockID, Is.EqualTo(updatedStock.ID));
             Assert.That(symbol, Is.EqualTo(updatedStock.Symbol));
             Assert.That(company, Is.EqualTo(updatedStock.Company));
@@ -163,6 +194,21 @@ namespace StockMarket.Tests
 
             Assert.That(result, Is.Not.Null);
             Assert.That(result.Result, Is.TypeOf<NotFoundResult>());
+        }
+
+        [Test]
+        public async Task UpdateStock_InvalidData_ReturnsBadRequest()
+        {
+            var stockModel = new StockModel
+            {
+                Symbol = "AMD",
+                CurrentPrice = -3100.99,
+            };
+
+            var actionResult = await _stockController.UpdateStock(1, stockModel);
+
+            Assert.That(actionResult, Is.Not.Null);
+            Assert.That(actionResult.Result, Is.TypeOf<BadRequestObjectResult>());
         }
 
         [Test]

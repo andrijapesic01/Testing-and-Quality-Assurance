@@ -14,6 +14,9 @@ public class StockController : ControllerBase
     [HttpPost("AddStock")]
     public async Task<ActionResult<Stock>> AddStock([FromBody] StockModel sm)
     {
+        if(string.IsNullOrEmpty(sm.Company) || string.IsNullOrEmpty(sm.Symbol) || sm.CurrentPrice < 0)
+            return BadRequest("Invalid stock data");
+
         var stock = new Stock
         {
             Symbol = sm.Symbol,
@@ -56,6 +59,10 @@ public class StockController : ControllerBase
         {
             return NotFound();
         }
+
+        if (string.IsNullOrEmpty(sm.Company) || string.IsNullOrEmpty(sm.Symbol) || sm.CurrentPrice < 0)
+            return BadRequest("Invalid stock data");
+
 
         stock.Symbol = sm.Symbol;
         stock.Company = sm.Company;
