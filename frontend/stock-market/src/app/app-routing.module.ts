@@ -16,6 +16,8 @@ const routes: Routes = [
   {path:'update-portfolio/:id', component: UpdatePortfolioComponent},
   {path:'update-stock/:id', component: UpdateStockComponent},
   {path:'portfolios', component: PortfoliosComponent},
+  { path: '', redirectTo: '/stocks', pathMatch: 'full' }, 
+  { path: '**', component: StocksComponent },
 ];
 
 @NgModule({
